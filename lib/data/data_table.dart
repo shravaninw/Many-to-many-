@@ -25,13 +25,6 @@ class UserThreads extends Table {
   IntColumn get threadId => integer()();
 }
 
-class UserwithThreads {
-  UserwithThreads(this.user, this.thread);
-
-  final User user;
-  final Thread thread;
-}
-
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
