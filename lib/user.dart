@@ -25,6 +25,7 @@ class UserSection extends StatelessWidget {
       String element = name[Random().nextInt(name.length)];
 
       final fab = User(
+        status: 1,
         name: element,
       );
       db.insertAllUsers(fab);
@@ -73,6 +74,8 @@ class UserSection extends StatelessWidget {
       child: ListTile(
         title: Text(itemUser.id.toString()),
         subtitle: Text(itemUser.name),
+        isThreeLine: true,
+        trailing: Text(itemUser.status.toString()),
       ),
     );
   }

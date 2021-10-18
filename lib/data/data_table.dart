@@ -11,6 +11,7 @@ class Users extends Table {
   IntColumn get id => integer().nullable().autoIncrement()();
 
   TextColumn get name => text()();
+  IntColumn get status => integer().nullable()();
 }
 
 class Threads extends Table {
@@ -38,7 +39,14 @@ class MyDatabase extends _$MyDatabase {
   MyDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+  @override
+  MigrationStrategy get migration =>
+      MigrationStrategy(onUpgrade: (migrator, from, to) async {
+        if (from == 1) {
+          await migrator.addColumn(users, users.status);
+        }
+      });
 
   Stream<List<User>> watchAllUsers() => select(users).watch();
 

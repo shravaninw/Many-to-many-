@@ -10,13 +10,16 @@ part of 'data_table.dart';
 class User extends DataClass implements Insertable<User> {
   final int? id;
   final String name;
-  User({this.id, required this.name});
+  final int? status;
+  User({this.id, required this.name, this.status});
   factory User.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return User(
       id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
       name: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
+      status: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}status']),
     );
   }
   @override
@@ -26,6 +29,9 @@ class User extends DataClass implements Insertable<User> {
       map['id'] = Variable<int?>(id);
     }
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || status != null) {
+      map['status'] = Variable<int?>(status);
+    }
     return map;
   }
 
@@ -33,6 +39,8 @@ class User extends DataClass implements Insertable<User> {
     return UsersCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       name: Value(name),
+      status:
+          status == null && nullToAbsent ? const Value.absent() : Value(status),
     );
   }
 
@@ -42,6 +50,7 @@ class User extends DataClass implements Insertable<User> {
     return User(
       id: serializer.fromJson<int?>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      status: serializer.fromJson<int?>(json['status']),
     );
   }
   @override
@@ -50,55 +59,68 @@ class User extends DataClass implements Insertable<User> {
     return <String, dynamic>{
       'id': serializer.toJson<int?>(id),
       'name': serializer.toJson<String>(name),
+      'status': serializer.toJson<int?>(status),
     };
   }
 
-  User copyWith({int? id, String? name}) => User(
+  User copyWith({int? id, String? name, int? status}) => User(
         id: id ?? this.id,
         name: name ?? this.name,
+        status: status ?? this.status,
       );
   @override
   String toString() {
     return (StringBuffer('User(')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('status: $status')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name);
+  int get hashCode => Object.hash(id, name, status);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is User && other.id == this.id && other.name == this.name);
+      (other is User &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.status == this.status);
 }
 
 class UsersCompanion extends UpdateCompanion<User> {
   final Value<int?> id;
   final Value<String> name;
+  final Value<int?> status;
   const UsersCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.status = const Value.absent(),
   });
   UsersCompanion.insert({
     this.id = const Value.absent(),
     required String name,
+    this.status = const Value.absent(),
   }) : name = Value(name);
   static Insertable<User> custom({
     Expression<int?>? id,
     Expression<String>? name,
+    Expression<int?>? status,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (status != null) 'status': status,
     });
   }
 
-  UsersCompanion copyWith({Value<int?>? id, Value<String>? name}) {
+  UsersCompanion copyWith(
+      {Value<int?>? id, Value<String>? name, Value<int?>? status}) {
     return UsersCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      status: status ?? this.status,
     );
   }
 
@@ -111,6 +133,9 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (status.present) {
+      map['status'] = Variable<int?>(status.value);
+    }
     return map;
   }
 
@@ -118,7 +143,8 @@ class UsersCompanion extends UpdateCompanion<User> {
   String toString() {
     return (StringBuffer('UsersCompanion(')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('status: $status')
           ..write(')'))
         .toString();
   }
@@ -138,8 +164,12 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
       'name', aliasedName, false,
       typeName: 'TEXT', requiredDuringInsert: true);
+  final VerificationMeta _statusMeta = const VerificationMeta('status');
+  late final GeneratedColumn<int?> status = GeneratedColumn<int?>(
+      'status', aliasedName, true,
+      typeName: 'INTEGER', requiredDuringInsert: false);
   @override
-  List<GeneratedColumn> get $columns => [id, name];
+  List<GeneratedColumn> get $columns => [id, name, status];
   @override
   String get aliasedName => _alias ?? 'users';
   @override
@@ -157,6 +187,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
       context.missing(_nameMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
     }
     return context;
   }
