@@ -19,10 +19,11 @@ class UserSection extends StatelessWidget {
       'Megan',
       'rihanna'
     ];
-    String element = name[Random().nextInt(name.length)];
     final db = Provider.of<MyDatabase>(context, listen: false);
 
     void _incrementUser() {
+      String element = name[Random().nextInt(name.length)];
+
       final fab = User(
         name: element,
       );
