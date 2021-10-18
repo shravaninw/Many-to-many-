@@ -5,7 +5,9 @@ import 'package:manytomany/data/data_table.dart';
 import 'package:provider/provider.dart';
 
 class UserSection extends StatelessWidget {
-  const UserSection({Key? key}) : super(key: key);
+  UserSection({Key? key}) : super(key: key);
+  late int threadId;
+  late int userId;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +28,8 @@ class UserSection extends StatelessWidget {
         name: element,
       );
       db.insertAlltUsers(fab);
+      final ut = UserThread(userId: userId, threadId: threadId);
+      db.insertUserThread(ut);
     }
 
     return Scaffold(
@@ -66,6 +70,7 @@ class UserSection extends StatelessWidget {
   }
 
   Widget _buildListItem(User itemUser, MyDatabase database) {
+    userId = itemUser.id!;
     return InkWell(
       onTap: () {},
       child: ListTile(
@@ -95,7 +100,9 @@ class UserSection extends StatelessWidget {
 
   Widget _buildThreadItem(Thread itemUser, MyDatabase database) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        threadId = itemUser.id!;
+      },
       child: ListTile(
         title: Text(itemUser.id.toString()),
         subtitle: Text(itemUser.chatName),

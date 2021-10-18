@@ -6,19 +6,19 @@ import 'package:provider/provider.dart';
 import 'data/data_table.dart';
 
 class ThreadSection extends StatelessWidget {
-  const ThreadSection({Key? key}) : super(key: key);
+  ThreadSection({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     void _incrementThread() {
       List<String> name = [
-        'Robert',
-        'enrique',
-        'Zayn',
-        'Noah',
-        'Megan',
-        'rihanna',
-        'shakira',
+        'Pattison',
+        'Iglesias',
+        'Malik',
+        'Centineo',
+        'fox',
+        'fenty',
+        'Meberak',
       ];
       String element = name[Random().nextInt(name.length)];
 
