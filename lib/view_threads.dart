@@ -28,6 +28,8 @@ class ViewThreads extends StatelessWidget {
     );
   }
 
+  List<Thread> presentThread = [];
+
   StreamBuilder<List<Thread>> _buildThreadList(BuildContext context) {
     final database = Provider.of<MyDatabase>(context, listen: false);
     return StreamBuilder(
@@ -38,7 +40,7 @@ class ViewThreads extends StatelessWidget {
         return ListView.builder(
           itemCount: todos.length,
           itemBuilder: (_, index) {
-            final itemtodo = todos[index];
+            final Thread itemtodo = todos[index];
             return _buildListItem(itemtodo, database);
           },
         );
@@ -47,6 +49,7 @@ class ViewThreads extends StatelessWidget {
   }
 
   Widget _buildListItem(Thread itemUser, MyDatabase database) {
+    presentThread.add(itemUser);
     return ListTile(
       title: Text(itemUser.id.toString()),
       subtitle: Text(itemUser.chatName),
@@ -64,6 +67,8 @@ class ViewThreads extends StatelessWidget {
           itemCount: todos.length,
           itemBuilder: (_, index) {
             final itemtodo = todos[index];
+            if (presentThread.contains(itemtodo)) return Text('');
+
             return _buildThreadItem(itemtodo, database, context);
           },
         );

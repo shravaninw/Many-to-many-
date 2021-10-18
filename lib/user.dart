@@ -50,7 +50,6 @@ class UserSection extends StatelessWidget {
       stream: database.watchAllUsers(),
       builder: (context, AsyncSnapshot<List<User>> snapshot) {
         final todos = snapshot.data ?? [];
-
         return ListView.builder(
           itemCount: todos.length,
           itemBuilder: (_, index) {
