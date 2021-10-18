@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:manytomany/view_users.dart';
 import 'package:provider/provider.dart';
 
 import 'data/data_table.dart';
@@ -12,7 +13,7 @@ class ThreadSection extends StatelessWidget {
   Widget build(BuildContext context) {
     void _incrementThread() {
       List<String> name = [
-        'Pattison',
+        'Pattinson',
         'Iglesias',
         'Malik',
         'Centineo',
@@ -55,16 +56,22 @@ class ThreadSection extends StatelessWidget {
           itemCount: todos.length,
           itemBuilder: (_, index) {
             final itemtodo = todos[index];
-            return _buildListItem(itemtodo, database);
+            return _buildListItem(itemtodo, database, context);
           },
         );
       },
     );
   }
 
-  Widget _buildListItem(Thread itemUser, MyDatabase database) {
+  Widget _buildListItem(
+      Thread itemUser, MyDatabase database, BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ViewUsers(threadId: itemUser.id!)));
+      },
       child: ListTile(
         title: Text(itemUser.id.toString()),
         subtitle: Text(itemUser.chatName),
