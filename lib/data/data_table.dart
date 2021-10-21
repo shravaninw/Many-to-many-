@@ -14,7 +14,7 @@ class Users extends Table {
   IntColumn get status => integer().nullable()();
 }
 
-class UsersCounts extends Table {
+class UsersCounts {
   UsersCounts(this.user, this.count) : super();
   final User user;
   final int count;
@@ -64,6 +64,15 @@ class MyDatabase extends _$MyDatabase {
 
   Future insertUserThread(UserThread userThread) =>
       into(userThreads).insert(userThread);
+
+  Future<List<Thread>> getThread(int userId) {
+    return ((select(threads).join([
+      leftOuterJoin(userThreads, userThreads.threadId.equalsExp(threads.id))
+    ]))
+          ..where(userThreads.userId.equals(userId)))
+        .get()
+        .then((event) => event.map((e) => e.readTable(threads)).toList());
+  }
 
   Stream<List<Thread>> viewThread(int userId) {
     return ((select(threads).join([

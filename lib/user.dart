@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:manytomany/data/data_table.dart';
 import 'package:manytomany/view_threads.dart';
 import 'package:provider/provider.dart';
+import 'package:rxdart/rxdart.dart';
 
 class UserSection extends StatelessWidget {
   UserSection({Key? key}) : super(key: key);
@@ -54,16 +55,28 @@ class UserSection extends StatelessWidget {
     //   print(event);
     // }));
     return StreamBuilder(
-      stream: database.watchAllUsers().asyncMap((List<User> event) async {
-        Stream<UsersCounts> c;
-        for (int i = 0; i < event.length; i++) {
-          print(event[i]);
-          Stream<UsersCounts> c =
-              database.viewThread(event[i].id!).map((events) {
-            print('len ${events.length}');
-            return UsersCounts(event[i], events.length);
+      // stream: database.watchAllUsers().asyncMap((List<User> event) async {
+      //   List<UsersCounts> _c = [];
+      //   for (int i = 0; i < event.length; i++) {
+      //     int length = (await database.getThread(event[i].id!)).length;
+      //     _c.add(UsersCounts(event[i], length));
+      //   }
+      //   return _c;
+      // }),
+
+      // stream: database
+      //     .watchAllUsers()
+      //     .asyncMap((users) => Future.wait(users.map((user) {
+      //           return database
+      //               .getThread(user.id!)
+      //               .then((value) => UsersCounts(user, value.length));
+      //         }))),
+      stream: database.watchAllUsers().asyncExpand((users) {
+        return Rx.combineLatestList(users.map((user) {
+          return database.viewThread(user.id!).map((threads) {
+            return UsersCounts(user, threads.length);
           });
-        }
+        }));
       }),
       //   for(int i=0;i<event.length;i++){
       //     return database.viewThread(event[i].id);
