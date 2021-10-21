@@ -9,20 +9,17 @@ part of 'data_table.dart';
 // ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
 class User extends DataClass implements Insertable<User> {
   final int? id;
-  final String name;
+  final String? name;
   final int? status;
-  final int? count;
-  User({this.id, required this.name, this.status, this.count});
+  User({this.id, this.name, this.status});
   factory User.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return User(
       id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
       name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}name']),
       status: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}status']),
-      count: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}count']),
     );
   }
   @override
@@ -31,12 +28,11 @@ class User extends DataClass implements Insertable<User> {
     if (!nullToAbsent || id != null) {
       map['id'] = Variable<int?>(id);
     }
-    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || name != null) {
+      map['name'] = Variable<String?>(name);
+    }
     if (!nullToAbsent || status != null) {
       map['status'] = Variable<int?>(status);
-    }
-    if (!nullToAbsent || count != null) {
-      map['count'] = Variable<int?>(count);
     }
     return map;
   }
@@ -44,11 +40,9 @@ class User extends DataClass implements Insertable<User> {
   UsersCompanion toCompanion(bool nullToAbsent) {
     return UsersCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
-      name: Value(name),
+      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
       status:
           status == null && nullToAbsent ? const Value.absent() : Value(status),
-      count:
-          count == null && nullToAbsent ? const Value.absent() : Value(count),
     );
   }
 
@@ -57,9 +51,8 @@ class User extends DataClass implements Insertable<User> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return User(
       id: serializer.fromJson<int?>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
+      name: serializer.fromJson<String?>(json['name']),
       status: serializer.fromJson<int?>(json['status']),
-      count: serializer.fromJson<int?>(json['count']),
     );
   }
   @override
@@ -67,82 +60,69 @@ class User extends DataClass implements Insertable<User> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int?>(id),
-      'name': serializer.toJson<String>(name),
+      'name': serializer.toJson<String?>(name),
       'status': serializer.toJson<int?>(status),
-      'count': serializer.toJson<int?>(count),
     };
   }
 
-  User copyWith({int? id, String? name, int? status, int? count}) => User(
+  User copyWith({int? id, String? name, int? status}) => User(
         id: id ?? this.id,
         name: name ?? this.name,
         status: status ?? this.status,
-        count: count ?? this.count,
       );
   @override
   String toString() {
     return (StringBuffer('User(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('status: $status, ')
-          ..write('count: $count')
+          ..write('status: $status')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, status, count);
+  int get hashCode => Object.hash(id, name, status);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is User &&
           other.id == this.id &&
           other.name == this.name &&
-          other.status == this.status &&
-          other.count == this.count);
+          other.status == this.status);
 }
 
 class UsersCompanion extends UpdateCompanion<User> {
   final Value<int?> id;
-  final Value<String> name;
+  final Value<String?> name;
   final Value<int?> status;
-  final Value<int?> count;
   const UsersCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.status = const Value.absent(),
-    this.count = const Value.absent(),
   });
   UsersCompanion.insert({
     this.id = const Value.absent(),
-    required String name,
+    this.name = const Value.absent(),
     this.status = const Value.absent(),
-    this.count = const Value.absent(),
-  }) : name = Value(name);
+  });
   static Insertable<User> custom({
     Expression<int?>? id,
-    Expression<String>? name,
+    Expression<String?>? name,
     Expression<int?>? status,
-    Expression<int?>? count,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (status != null) 'status': status,
-      if (count != null) 'count': count,
     });
   }
 
   UsersCompanion copyWith(
-      {Value<int?>? id,
-      Value<String>? name,
-      Value<int?>? status,
-      Value<int?>? count}) {
+      {Value<int?>? id, Value<String?>? name, Value<int?>? status}) {
     return UsersCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       status: status ?? this.status,
-      count: count ?? this.count,
     );
   }
 
@@ -153,13 +133,10 @@ class UsersCompanion extends UpdateCompanion<User> {
       map['id'] = Variable<int?>(id.value);
     }
     if (name.present) {
-      map['name'] = Variable<String>(name.value);
+      map['name'] = Variable<String?>(name.value);
     }
     if (status.present) {
       map['status'] = Variable<int?>(status.value);
-    }
-    if (count.present) {
-      map['count'] = Variable<int?>(count.value);
     }
     return map;
   }
@@ -169,8 +146,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     return (StringBuffer('UsersCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('status: $status, ')
-          ..write('count: $count')
+          ..write('status: $status')
           ..write(')'))
         .toString();
   }
@@ -188,18 +164,14 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
       defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
   late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
-      'name', aliasedName, false,
-      typeName: 'TEXT', requiredDuringInsert: true);
+      'name', aliasedName, true,
+      typeName: 'TEXT', requiredDuringInsert: false);
   final VerificationMeta _statusMeta = const VerificationMeta('status');
   late final GeneratedColumn<int?> status = GeneratedColumn<int?>(
       'status', aliasedName, true,
       typeName: 'INTEGER', requiredDuringInsert: false);
-  final VerificationMeta _countMeta = const VerificationMeta('count');
-  late final GeneratedColumn<int?> count = GeneratedColumn<int?>(
-      'count', aliasedName, true,
-      typeName: 'INTEGER', requiredDuringInsert: false);
   @override
-  List<GeneratedColumn> get $columns => [id, name, status, count];
+  List<GeneratedColumn> get $columns => [id, name, status];
   @override
   String get aliasedName => _alias ?? 'users';
   @override
@@ -215,16 +187,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     if (data.containsKey('name')) {
       context.handle(
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
-    } else if (isInserting) {
-      context.missing(_nameMeta);
     }
     if (data.containsKey('status')) {
       context.handle(_statusMeta,
           status.isAcceptableOrUnknown(data['status']!, _statusMeta));
-    }
-    if (data.containsKey('count')) {
-      context.handle(
-          _countMeta, count.isAcceptableOrUnknown(data['count']!, _countMeta));
     }
     return context;
   }
@@ -369,9 +335,7 @@ class $ThreadsTable extends Threads with TableInfo<$ThreadsTable, Thread> {
   final VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
       'id', aliasedName, true,
-      typeName: 'INTEGER',
-      requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
+      typeName: 'INTEGER', requiredDuringInsert: false);
   final VerificationMeta _chatNameMeta = const VerificationMeta('chatName');
   late final GeneratedColumn<String?> chatName = GeneratedColumn<String?>(
       'chat_name', aliasedName, false,
@@ -400,7 +364,7 @@ class $ThreadsTable extends Threads with TableInfo<$ThreadsTable, Thread> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => <GeneratedColumn>{};
   @override
   Thread map(Map<String, dynamic> data, {String? tablePrefix}) {
     return Thread.fromData(data,

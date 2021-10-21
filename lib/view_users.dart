@@ -37,7 +37,7 @@ class ViewUsers extends StatelessWidget {
   Widget _buildListItem(User itemUser, MyDatabase database) {
     return ListTile(
       title: Text(itemUser.id.toString()),
-      subtitle: Text(itemUser.name),
+      subtitle: Text(itemUser.name!),
     );
   }
 }

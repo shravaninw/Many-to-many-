@@ -10,13 +10,18 @@ part 'data_table.g.dart';
 class Users extends Table {
   IntColumn get id => integer().nullable().autoIncrement()();
 
-  TextColumn get name => text()();
+  TextColumn get name => text().nullable()();
   IntColumn get status => integer().nullable()();
-  IntColumn get count => integer().nullable()();
+}
+
+class UsersCounts extends Table {
+  UsersCounts(this.user, this.count) : super();
+  final User user;
+  final int count;
 }
 
 class Threads extends Table {
-  IntColumn get id => integer().nullable().autoIncrement()();
+  IntColumn get id => integer().nullable()();
 
   TextColumn get chatName => text()();
 }
