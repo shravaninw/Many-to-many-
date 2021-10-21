@@ -12,6 +12,7 @@ class Users extends Table {
 
   TextColumn get name => text()();
   IntColumn get status => integer().nullable()();
+  IntColumn get count => integer().nullable()();
 }
 
 class Threads extends Table {
